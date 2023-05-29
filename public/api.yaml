@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: CDT-PAY 1.0 API
+  description: Here goes differents api endpoind
+  version: 0.1.9
+servers:
+  - url: http://localhost:8000/api
+    description: local server
+
+paths:
+  /register:
+    post:
+      summary: register new student .
+      parameters:
+          - in: query
+            name: name
+            description: student name.
+            required: true
+          - in: query
+            name: surname
+            description: student classe.
+            required: false
+          - in: query
+            name: classe
+            description: student classe.
+            required: true
+          - in: query
+            name: birthday
+            description: student birthday.
+            required: true
+          - in: query
+            name: sex
+            description: student birthday.
+            required: true
+          - in: query
+            name: father_name
+            description: student father name.
+            required: false
+          - in: query
+            name: mother_name
+            description: student mother name.
+            required: false
+          - in: query
+            name: father_phone
+            description: student father phone number.
+            required: true
+          - in: query
+            name: mother_phone
+            description: student mother phone number.
+            required: false
+          - in: query
+            name: nationalite
+            description: student nationality.
+            required: false
+          - in: query
+            name: email
+            description: student email.
+            required: true
+          - in: query
+            name: password
+            description: student password.
+            required: true
+      responses:
+          200:
+            description: new student saved 200
+  /login:
+    post:
+      summary: login user .
+      parameters:
+        - in: query
+          name: email
+          description: user email.
+          required: true
+        - in: query
+          name: password
+          description: user password.
+          required: true
+      responses:
+        200:
+          description: user connected
+  /list-classe:
+    get:
+      summary: liste des salles de classe.
+      responses:
+        200:
+          description: liste des salles de classe
+  /list-cycle:
+    get:
+      summary: liste des Cycles.
+      responses:
+        200:
+          description: liste des cycles
+  /list-annee-scolaire:
+    get:
+      summary: liste année scolaire.
+      responses:
+        200:
+          description: liste des années scolaires
+  /student-list:
+    get:
+      summary: liste des élèves.
+      responses:
+        200:
+          description: listes de tout les éléves
+  /list-student-by-classe:
+    post:
+      summary: liste des élèves par classe.
+      parameters:
+        - in: query
+          name: ref_classe
+          description: ref de la classe dont on souhaite la liste d'élève.
+          required: true
+      responses:
+        200:
+          description: listes de tout les éléves par classe
