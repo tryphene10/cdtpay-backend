@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('classe_id')->nullable();
             $table->unsignedBigInteger('annee_scolaire_id')->nullable();
             $table->unsignedBigInteger('statut_eleve_id')->nullable();
-            $table->unsignedBigInteger('pension_id')->nullable();
+//            $table->unsignedBigInteger('pension_id')->nullable();
             $table->string('name');
             $table->string('surname')->nullable();
             $table->string('birthday')->nullable();
@@ -35,7 +35,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('published')->default(1);
-            $table->foreign('pension_id')->references('id')->on('pensions');
+//            $table->foreign('pension_id')->references('id')->on('pensions');
             $table->foreign('statut_eleve_id')->references('id')->on('statut_eleves');
             $table->foreign('annee_scolaire_id')->references('id')->on('annee_scoaires');
             $table->foreign('classe_id')->references('id')->on('classes');

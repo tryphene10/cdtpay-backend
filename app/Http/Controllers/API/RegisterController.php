@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Classe;
 use App\Models\Role;
+use App\Models\Statut_eleve;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
@@ -53,17 +54,20 @@ class RegisterController extends BaseController
             }
 
         }
+        $role = Role::where('ref', '=',$request->get('role'))->first();
+        $classe = Classe::where('ref', '=', $request->get('classe'))->first();
+        $statutEl = Statut_eleve::where('designation', '=','inscription en cours')->first();
         DB::beginTransaction();
-
         try {
-            $role = Role::where('ref', '=',$request->get('role'))->first();
-            $classe = Classe::where('ref', '=', $request->get('classe'))->first();
+
+
             $objUser = new User();
             $objUser->name = $request->get('name');
             $objUser->surname = $request->get('surname');
             $objUser->classe()->associate($classe);
             $objUser->birthday = $request->get('birthday');
             $objUser->role()->associate($role);
+            $objUser->statut_eleve()->associate($statutEl);
             $objUser->sex = $request->get('sex');
             $objUser->father_name = $request->get('father_name');
             $objUser->mother_name = $request->get('mother_name');
@@ -181,8 +185,50 @@ class RegisterController extends BaseController
 
     }
     public function detailEleve(){
+        $allUserDetail = [];
         $el = auth::user();
-        return $this->sendResponse($el, 'detail de élève');
+        if (!empty($el)){
+            $user = DB::table('users')
+                ->join('classes','classes.id', '=','users.classe_id')
+                ->join('annee_scolaires','annee_scolaires.id', '=','users.annee_scolaire_id')
+                ->join('statut_eleves','statut_eleves.id', '=','users.statut_eleve_id')
+                ->join('pensions','pensions.id', '=','users.pension_id')
+                ->select(
+                    'users.name as name',
+                    'users.surname as surname',
+                    'users.birthday as birthday',
+                    'users.sex as Sexe',
+                    'users.father_name as father_name',
+                    'users.mother_name as mother_name',
+                    'users.father_phone as num_pere',
+                    'users.mother_phone as num_mere',
+                    'users.nationalite as nationalite',
+                    'classes.designation as classe',
+                    'classes.pension_id as pension_id',
+                    'annee_scolaires.name as annee_academic',
+                    'statut_eleves.designation as statut_eleve',
+                    'pensions.montant_total as pension',
+                )->where('users.published','=', 1)
+                ->first();
+            $tranche = DB::table('tranches')
+                ->join('intitule_tranches','intitule_tranches.id', '=','tranches.intitule_tranche_id')
+                ->join('cycles','cycles.id', '=','tranches.cycle_id')
+                ->select(
+                    'intitule_tranches.designation as tranche',
+                    'cycles.designation as cycle',
+                    'tranches.montant as montant',
+                    'tranches.ref as ref_tranche',
+                )
+                ->where('tranches.pension_id','=', $user->pension_id)
+                ->get();
+        }else{
+            return $this->sendError('02',['error'=>'Cette action nécéssite une autorisation.']);
+        }
+        $allUserDetail = [
+            'info_user' => $user,
+            'dif_tranches' => $tranche
+        ];
+        return $this->sendResponse($allUserDetail, 'detail de élève');
     }
 
     public function listelevebyclasse(Request $request)

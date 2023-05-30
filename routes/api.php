@@ -43,7 +43,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('student-list', [RegisterController::class,'listusers']);
     Route::controller(RegisterController::class)->group(function(){
         Route::get('student-list', 'listusers');
-        Route::get('detail', 'student-list');
+        Route::get('detail', 'detailEleve');
         Route::post('list-student-by-classe', 'listelevebyclasse');
         Route::post('/logout',  'logout');
     });
